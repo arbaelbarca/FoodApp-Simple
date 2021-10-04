@@ -18,7 +18,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arbaelbarca.foodapp.R
+import com.arbaelbarca.foodapp.datasource.remote.response.ResponseError
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import com.google.gson.TypeAdapter
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -27,6 +30,8 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.orhanobut.hawk.Hawk
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import retrofit2.HttpException
+import java.io.IOException
 import java.util.HashMap
 import java.util.concurrent.TimeUnit
 
@@ -37,7 +42,6 @@ fun ImageView.loadImageUrl(url: String, context: Context) {
 //        .placeholder(R.drawable.no_image)
         .into(this)
 }
-
 
 
 fun hmsTimeFormatter(milliSeconds: Long): String? {
@@ -122,7 +126,7 @@ fun setRvAdapterVertikal(
 
 
 fun showToast(message: String?, context: Context) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }
 
 
@@ -218,4 +222,17 @@ fun showAlertDialog(context: Context, message: String, callback: () -> Unit) {
     }
 
     alertDialog.create().show()
+}
+
+fun showErrorMessageThrowable(throwable: Throwable?): String {
+    var message: String = ""
+    if (throwable is HttpException) {
+        val body = throwable.response()?.errorBody()
+        val gson = Gson()
+        val adapter: TypeAdapter<ResponseError> = gson.getAdapter(ResponseError::class.java)
+        val errorResponse: ResponseError = adapter.fromJson(body?.string())
+        message = errorResponse.message!!
+        println("respon Message te $message")
+    }
+    return message
 }

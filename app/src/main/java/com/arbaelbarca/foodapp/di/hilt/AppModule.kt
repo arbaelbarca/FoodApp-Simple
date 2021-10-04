@@ -1,6 +1,9 @@
 package com.arbaelbarca.foodapp.di.hilt
 
 import com.arbaelbarca.foodapp.datasource.network.ApiService
+import com.arbaelbarca.foodapp.utils.ConstVar
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,11 +15,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
-    fun provideBaseUrl() = "ConstVar.BASE_URL"
+    fun provideBaseUrl() = ConstVar.BASE_URL
 
 
     @Singleton
@@ -33,11 +37,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofitInstance(BASE_URL: String, okHttpClient: OkHttpClient): ApiService =
+    fun provideRetrofitInstance(BASE_URL: String, okHttpClient: OkHttpClient, gson: Gson): ApiService =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(ApiService::class.java)
 
@@ -46,5 +50,13 @@ object AppModule {
     fun httpInterceptorLogging(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
+
+    @Singleton
+    @Provides
+    fun gsonConvert(): Gson {
+        return GsonBuilder()
+            .setLenient()
+            .create()
     }
 }

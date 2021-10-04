@@ -1,6 +1,3 @@
-# BaseMvvm
-
-
 # Api Use 
 
 1. API Base URL : https://api.spoonacular.com/

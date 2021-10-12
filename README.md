@@ -9,7 +9,7 @@
 - ViewBinding
 - Hilt
 - Coroutine
-- Live Data
+- Mutable Live Data
 - Retrofit2
 - Pagination 
 
